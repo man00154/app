@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # FastAPI Application Service
+  app:
+    build: .
+    ports:
+      - "8000:8000" # FastAPI application
+      - "8001:8001" # Prometheus metrics endpoint
+    volumes:
+      - ./app/ITSM_data.csv:/app/app/ITSM_data.csv # Mount your data file
+      - ./app/models:/app/app/models # Persist models
+    environment:
+      - PYTHONUNBUFFERED=1 # Ensures logs are immediately flushed
+    restart: always # Always restart if the container stops
+
+  # Prometheus Service
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090" # Prometheus UI
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Mount Prometheus configuration
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    depends_on:
+      - app # Prometheus depends on the app being up to scrape metrics
+    restart: always
+
+  # Grafana Service
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana UI
+    volumes:
+      - grafana_data:/var/lib/grafana # Persist Grafana data
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources # Provision datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards # Provision dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Change this in production!
+    depends_on:
+      - prometheus # Grafana depends on Prometheus for data
+    restart: always
+
+volumes:
+  grafana_data: {} # Named volume for Grafana persistence
