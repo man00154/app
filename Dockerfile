@@ -20,7 +20,7 @@ RUN python --version
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code into the container
-COPY ./app /app/app
+COPY ./app /app
 
 # Create the models directory
 RUN mkdir -p /app/app/models
