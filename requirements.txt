@@ -4,8 +4,8 @@ pandas==2.2.2
 numpy==1.26.4
 scikit-learn==1.5.0
 statsmodels==0.14.2
-prophet==1.1.0 # Note: Prophet can be tricky to install, ensure you have pystan dependencies if needed
-xgboost==2.0.0
+#prophet==1.1.0 # Note: Prophet can be tricky to install, ensure you have pystan dependencies if needed
+#xgboost==2.0.0
 python-multipart==0.0.9 # For file uploads if you add them later
 python-prometheus-client==0.20.0
 joblib==1.4.2
