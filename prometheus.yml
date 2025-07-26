@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s # How frequently to scrape targets
+
+scrape_configs:
+  - job_name: 'fastapi_app'
+    # metrics_path defaults to /metrics
+    # scheme defaults to http
+    static_configs:
+      - targets: ['app:8001'] # 'app' is the service name in docker-compose, 8001 is the metrics port
