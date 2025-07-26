@@ -3,12 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
-
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.api import ExponentialSmoothing, SimpleExpSmoothing, Holt
 from sklearn.ensemble import RandomForestRegressor
-
-
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 import warnings
@@ -170,36 +167,36 @@ def train_and_forecast_arima(train_df, test_df, order=(1,1,1), seasonal_order=(1
         return pd.Series([np.nan] * len(test_df), index=test_df['ds']), {'MAE': np.nan, 'RMSE': np.nan, 'MAPE': np.nan}
 
 
-def train_and_forecast_prophet(train_df, test_df, time_granularity):
-    """
-    Trains and forecasts using Facebook Prophet.
+#def train_and_forecast_prophet(train_df, test_df, time_granularity):
+    #"""
+   # Trains and forecasts using Facebook Prophet.
 
-    Args:
-        train_df (pd.DataFrame): Training data with 'ds' and 'y'.
-        test_df (pd.DataFrame): Test data with 'ds' and 'y'.
-        time_granularity (str): 'quarterly' or 'annually'.
+    #Args:
+        #train_df (pd.DataFrame): Training data with 'ds' and 'y'.
+        #test_df (pd.DataFrame): Test data with 'ds' and 'y'.
+        #time_granularity (str): 'quarterly' or 'annually'.
 
-    Returns:
-        tuple: (pd.Series, dict) - Predicted values and evaluation metrics.
-    """
-    try:
+    #Returns:
+       # tuple: (pd.Series, dict) - Predicted values and evaluation metrics.
+    #"""
+   # try:
+       #from prophet import Prophet
         #from prophet import Prophet
-        from prophet import Prophet
-        model = Prophet(
-            yearly_seasonality=True,
-        )
-        if time_granularity == 'quarterly':
-            model.add_seasonality(name='quarterly', period=365.25/4, fourier_order=5)
+        #model = Prophet(
+         #   yearly_seasonality=True,
+       # )
+        #if time_granularity == 'quarterly':
+          #  model.add_seasonality(name='quarterly', period=365.25/4, fourier_order=5)
 
-        model.fit(train_df)
-        future = model.make_future_dataframe(periods=len(test_df), freq='QS' if time_granularity == 'quarterly' else 'AS')
-        forecast = model.predict(future)
-        predictions = forecast['yhat'].tail(len(test_df)).values
-        metrics = evaluate_model(test_df['y'], predictions, "Prophet")
-        return pd.Series(predictions, index=test_df['ds']), metrics
-    except Exception as e:
-        print(f"Prophet training failed: {e}")
-        return pd.Series([np.nan] * len(test_df), index=test_df['ds']), {'MAE': np.nan, 'RMSE': np.nan, 'MAPE': np.nan}
+       # model.fit(train_df)
+        #future = model.make_future_dataframe(periods=len(test_df), freq='QS' if time_granularity == 'quarterly' else 'AS')
+       # forecast = model.predict(future)
+        #predictions = forecast['yhat'].tail(len(test_df)).values
+       # metrics = evaluate_model(test_df['y'], predictions, "Prophet")
+        #return pd.Series(predictions, index=test_df['ds']), metrics
+   # except Exception as e:
+       # print(f"Prophet training failed: {e}")
+        #return pd.Series([np.nan] * len(test_df), index=test_df['ds']), {'MAE': np.nan, 'RMSE': np.nan, 'MAPE': np.nan}
 
 def train_and_forecast_ets(train_df, test_df, time_granularity):
     """
@@ -277,7 +274,7 @@ def train_and_forecast_ml_model(train_df, test_df, model_type='RandomForest'):
     Args:
         train_df (pd.DataFrame): Training data with 'ds' and 'y'.
         test_df (pd.DataFrame): Test data with 'ds' and 'y'.
-        model_type (str): 'RandomForest' or 'XGBoost'.
+        model_type (str): 'RandomForest'.
 
     Returns:
         tuple: (pd.Series, dict) - Predicted values and evaluation metrics.
@@ -296,14 +293,14 @@ def train_and_forecast_ml_model(train_df, test_df, model_type='RandomForest'):
         y_train = train_features['y']
         X_test = test_features[existing_features]
 
-        if model_type == 'RandomForest':
+            model_type == 'RandomForest':
             model = RandomForestRegressor(n_estimators=100, random_state=42)
             model_name = "RandomForest"
-        elif model_type == 'XGBoost':
-            model = XGBRegressor(n_estimators=100, random_state=42, objective='reg:squarederror')
-            model_name = "XGBoost"
-        else:
-            raise ValueError("model_type must be 'RandomForest' or 'XGBoost'.")
+       # elif model_type == 'XGBoost':
+        #    model = XGBRegressor(n_estimators=100, random_state=42, objective='reg:squarederror')
+         #   model_name = "XGBoost"
+        #else:
+            #raise ValueError("model_type must be 'RandomForest' or 'XGBoost'.")
 
         model.fit(X_train, y_train)
         predictions = model.predict(X_test)
@@ -406,9 +403,9 @@ def main():
             all_model_results['SARIMA'] = sarima_metrics
             all_model_predictions['SARIMA'] = sarima_predictions
 
-            prophet_predictions, prophet_metrics = train_and_forecast_prophet(train_df, test_df, granularity)
-            all_model_results['Prophet'] = prophet_metrics
-            all_model_predictions['Prophet'] = prophet_predictions
+            #prophet_predictions, prophet_metrics = train_and_forecast_prophet(train_df, test_df, granularity)
+            #all_model_results['Prophet'] = prophet_metrics
+            #all_model_predictions['Prophet'] = prophet_predictions
 
             ets_predictions, ets_metrics = train_and_forecast_ets(train_df, test_df, granularity)
             all_model_results['ETS'] = ets_metrics
@@ -418,9 +415,9 @@ def main():
             all_model_results['RandomForest'] = rf_metrics
             all_model_predictions['RandomForest'] = rf_predictions
 
-            xgb_predictions, xgb_metrics = train_and_forecast_ml_model(train_df, test_df, 'XGBoost')
-            all_model_results['XGBoost'] = xgb_metrics
-            all_model_predictions['XGBoost'] = xgb_predictions
+            #xgb_predictions, xgb_metrics = train_and_forecast_ml_model(train_df, test_df, 'XGBoost')
+            #all_model_results['XGBoost'] = xgb_metrics
+            #all_model_predictions['XGBoost'] = xgb_predictions
 
             best_model_name = None
             min_rmse = float('inf')
@@ -491,19 +488,19 @@ def main():
                 except Exception as e:
                     print(f"SARIMA final forecast failed: {e}")
                     final_forecast_predictions = pd.Series([np.nan] * future_periods, index=future_df['ds'])
-            elif best_model_name == 'Prophet':
+            #elif best_model_name == 'Prophet':
                 #from prophet import Prophet
-                from prophet import Prophet
-                model = Prophet(
-                    yearly_seasonality=True,
-                )
-                if granularity == 'quarterly':
-                    model.add_seasonality(name='quarterly', period=365.25/4, fourier_order=5)
-                model.fit(full_df)
-                future = model.make_future_dataframe(periods=future_periods, freq='QS' if granularity == 'quarterly' else 'AS')
-                forecast = model.predict(future)
-                final_forecast_predictions = forecast['yhat'].tail(future_periods)
-                final_forecast_predictions = pd.Series(final_forecast_predictions.values, index=future_df['ds'])
+                #from prophet import Prophet
+                #model = Prophet(
+                    #yearly_seasonality=True,
+                #)
+               # if granularity == 'quarterly':
+                   # model.add_seasonality(name='quarterly', period=365.25/4, fourier_order=5)
+                #model.fit(full_df)
+                #future = model.make_future_dataframe(periods=future_periods, freq='QS' if granularity == 'quarterly' else 'AS')
+                #forecast = model.predict(future)
+                #final_forecast_predictions = forecast['yhat'].tail(future_periods)
+                #final_forecast_predictions = pd.Series(final_forecast_predictions.values, index=future_df['ds'])
             elif best_model_name == 'ETS':
                 full_series = full_df.set_index('ds')['y']
                 
@@ -560,11 +557,11 @@ def main():
 
                     if best_model_name == 'RandomForest':
                         model = RandomForestRegressor(n_estimators=100, random_state=42)
-                    else:
-                        model = XGBRegressor(n_estimators=100, random_state=42, objective='reg:squarederror')
+                   # else:
+                    #    model = XGBRegressor(n_estimators=100, random_state=42, objective='reg:squarederror')
                     
-                    model.fit(X_full, y_full)
-                    final_forecast_predictions = pd.Series(model.predict(X_future), index=future_df['ds'])
+                    #model.fit(X_full, y_full)
+                    #final_forecast_predictions = pd.Series(model.predict(X_future), index=future_df['ds'])
             else:
                 final_forecast_predictions = pd.Series([np.nan] * future_periods, index=future_df['ds'])
 
